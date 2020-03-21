@@ -48,11 +48,81 @@ str(offClean)
 str(bioClean)
 
 ```
-  
+## Part 2
+```{r}
+defClean2 = pivot_longer(
+  defClean,
+  cols = Tackles_Solo:Pass_PB,
+  names_to = "Statistic",
+  values_to = "Count",
+  values_drop_na = TRUE
+)
+head(defClean2)
+
+
+
+```
+
+Response: A new column, 'Statistic' has been added. 
+
+
+```{r}
+#qplot(defClean2$Count, geom="histogram") + facet_wrap(~ defClean2$Statistic)
+ggplot(data=defClean2, aes(defClean2$Count)) + 
+  geom_histogram(binwidth = 1) +
+  facet_wrap(~ defClean2$Statistic)
+
+
+```
+
+
+Response: All the items which have high frequency in 0 are rare skill. Turnover_FF, Turnover_FR, Turnoner_INT, Pass_QBH are rare skills.
+
+
+```{r}
+
+defClean_3= subset(defClean2, defClean2$Statistic == "Tackles_Solo")
+defClean_ks= subset(defClean_3, defClean_3$Opponent_Opponent =="Kansas State")
+defClean_wv= subset(defClean_3, defClean_3$Opponent_Opponent == "West Virginia")
+head((defClean_wv))
+
+
+joined_df <- merge(defClean_ks, defClean_wv, by.x = "Name", 
+             by.y = "Name", all.x = TRUE, all.y = TRUE)
+
+joined_df
+ggplot(joined_df, aes(x=joined_df$Count.x, y=joined_df$Count.y)) +
+  geom_point(size=2, shape=23)
+
+```
+
+
+Response: Largernumber of solo tackles happened against West Virginia.
+
+
+```{r}
+head(bioClean)
+
+```
+
+##Part 2.2
+```{r}
+
+bioClean2 = bioClean %>% separate(Hometown, c("City", "State"), sep = ",")
+head(bioClean2)
+w = table(bioClean2$State)
+t = as.data.frame(w)
+t
+
+```
+
+
+Response: The 'Hometown' column has been separated into two columns, City & State. 
+The frequency in the other table shows the number of players from each state. 
     
 
-#Part 3
-###Problem 1
+# Part 3
+### Problem 1
 ```{r}
 #Part 3
 #Problem 1
