@@ -49,77 +49,17 @@ str(bioClean)
 
 ```
   
-## Part 2
-```{r}
-defClean2 = pivot_longer(
-  defClean,
-  cols = Tackles_Solo:Pass_PB,
-  names_to = "Statistic",
-  values_to = "Count",
-  values_drop_na = TRUE
-)
-head(defClean2)
-
-
-
-```
-
-Response: A new column, 'Statistic' has been added. 
-
-
-```{r}
-#qplot(defClean2$Count, geom="histogram") + facet_wrap(~ defClean2$Statistic)
-ggplot(data=defClean2, aes(defClean2$Count)) + 
-  geom_histogram(binwidth = 1) +
-  facet_wrap(~ defClean2$Statistic) + labs(title="Skill Plots",y="Frequency",x="Number of Occurrences")
-
-
-```
-
-
-Response: All the items which have high frequency in 0 are rare skill. Turnover_FF, Turnover_FR, Turnoner_INT, Pass_QBH are rare skills with many entries of 0 and just one or two instances with the statistic happening in the game. 
-
-
-```{r}
-
-defClean_3 <- defClean2 %>%
-  filter(Statistic == "Tackles_Solo",Opponent_Opponent == "West Virginia" | Opponent_Opponent == "Kansas State") %>% 
-  select(-Statistic) %>%
-  pivot_wider(names_from = Opponent_Opponent, values_from = Count)
-
-ggplot(defClean_3, aes(x=defClean_3$`West Virginia`, y=defClean_3$`Kansas State`)) +
-  geom_point(size=2, shape=23) + labs(title="Solo Tackles in WVU and KSU Games",x="West Virgina Solo Tackles",y="Kansas State Solo Tackles")
-
-```
-
-
-Response: From the plot above, we see that many players had better games against one team or the other. There are three distinct players with at least two more tackles in the WVU game than KSU, while Iowa State's two leading tacklers in the KSU game had one combined mark in the WVU contest. Overall, the plot does not reveal a clear distinction between the two games.
-
-###Part 2.2  
-  
-```{r}
-
-bioClean2 = bioClean %>% separate(Hometown, c("City", "State"), sep = ",")
-head(bioClean2)
-w = table(bioClean2$State)
-t = as.data.frame(w)
-t
-
-```
-
-
-Response: The 'Hometown' column has been separated into two columns, City & State. 
-The frequency in the other table shows the number of players from each state. Iowa is the most seen state with 33 entries, while Florida is a distant second with 10. 
     
 
-# Part 3
-### Problem 1
+#Part 3
+###Problem 1
 ```{r}
 #Part 3
 #Problem 1
 bo_join <- offClean %>% left_join(bioClean,by="Name")
 home <-  bo_join %>%
   select(Name,Hometown) %>% unique
+home
 ```
 Above is the full list of where offensive players are from. There are a variety of cities and states represented.
   
@@ -136,7 +76,6 @@ prob2_join <- prob2 %>%
   select(Name,rec_yds,Weight)
 plot(Weight~rec_yds,data=prob2_join,main="Scatterplot of Weight and Rec Yards",xlab="Rec. Yards")
 ```
-  
 From the scatterplot above, we can see that there is little-to-no correlation between weight and receiving yards. Many of the points are clustered towards the bottom left corner of weight and receiving yards, while one of the lightest players actually has the most receiving yards on the team. Meanwhile, there is a near vertical line present betgween 100 and 225 yards, so weight really has no bearing on receiving yards.  
     
         
@@ -180,12 +119,12 @@ int_committed <- offClean %>%
 int <- int_forced %>%
   left_join(int_committed,by="Opponent_Opponent")
 int
-ggplot(int,aes(x=off_int,y=def_int))+geom_point()+geom_text(aes(label=Opponent_Opponent)) + labs(title="Plot of Interceptions in 2019 Cyclone Football",y="Interceptions Forced",x="Interceptions Allowed")
+ggplot(int,aes(x=off_int,y=def_int,main="Plot of Interceptions in 2019 Cyclone Football",ylab="Interceptions Forced",xlab="Interceptions Allowed"))+geom_point()+geom_text(aes(label=Opponent_Opponent))
 
 
+#plot(data=int,def_int~off_int,main="Plot of Interceptions in 2019 Cyclone Football",ylab="Interceptions Forced",xlab="Interceptions Allowed")
 
 ```
-  
 The question we wanted to answer is:
 Is there any correlation between the number of interceptions forced and committed in a game? (Potentially due to weather conditions in a game)  
   
